@@ -109,9 +109,9 @@ async def prepare_interaction_send(interaction: discord.Interaction, status_mess
         except discord.HTTPException as exc:
             print(f"[upload] status={exc.status} code={exc.code} text={exc.text}")
             if exc.code == 40005:
-                fallback = "❌ Upload failed: Discord says the file is too large."
+                fallback = " Upload failed: Discord says the file is too large."
             else:
-                fallback = f"❌ Upload failed ({exc.status}/{exc.code})."
+                fallback = f" Upload failed ({exc.status}/{exc.code})."
             if use_followup:
                 await interaction.followup.send(fallback, ephemeral=True)
                 return
@@ -625,7 +625,7 @@ async def do_caption(send_fn, url: str, filename: str, text: str, style: str, fo
                     f.write(await resp.read())
 
         if os.path.getsize(input_path) > MAX_SOURCE_FILE_MB * 1024 * 1024:
-            await send_fn(f"❌ File too large (max {MAX_SOURCE_FILE_MB} MB).")
+            await send_fn(f" File too large (max {MAX_SOURCE_FILE_MB} MB).")
             return
 
         ext, is_animated = detect_format(input_path, content_type)
@@ -655,7 +655,7 @@ async def do_caption(send_fn, url: str, filename: str, text: str, style: str, fo
             output_ext = ".png"
 
         if not success or not os.path.exists(output_path):
-            await send_fn("❌ Processing failed.")
+            await send_fn(" Processing failed.")
             return
 
         print(f"[upload] path={output_path} size_bytes={os.path.getsize(output_path)} ext={output_ext}")
@@ -673,12 +673,12 @@ async def do_image_to_gif(send_fn, url: str, effect: str):
                     f.write(await resp.read())
 
         if os.path.getsize(input_path) > MAX_SOURCE_FILE_MB * 1024 * 1024:
-            await send_fn(f"❌ File too large (max {MAX_SOURCE_FILE_MB} MB).")
+            await send_fn(f" File too large (max {MAX_SOURCE_FILE_MB} MB).")
             return
 
         ext, is_animated = detect_format(input_path, content_type)
         if ext not in IMAGE_EXTENSIONS or is_animated:
-            await send_fn("❌ Send a still image first, then run `/image_to_gif`.")
+            await send_fn(" Send a still image first, then run `/image_to_gif`.")
             return
 
         output_path = os.path.join(tmpdir, "output.gif")
@@ -687,7 +687,7 @@ async def do_image_to_gif(send_fn, url: str, effect: str):
         )
 
         if not success or not os.path.exists(output_path):
-            await send_fn("❌ GIF conversion failed.")
+            await send_fn(" GIF conversion failed.")
             return
 
         print(f"[upload] path={output_path} size_bytes={os.path.getsize(output_path)} ext=.gif")
@@ -916,17 +916,17 @@ async def caption(interaction: discord.Interaction, bg: Literal["white", "black"
     if not media:
         try:
             await interaction.response.send_message(
-                "❌ No media found. Send an image, video, or GIF first, then run `/caption`.",
+                " No media found. Send an image, video, or GIF first, then run `/caption`.",
                 ephemeral=True,
             )
         except discord.NotFound:
             channel = interaction.channel
             if channel is None:
                 raise RuntimeError("Interaction channel is unavailable.")
-            await channel.send(f"{interaction.user.mention} ❌ No media found. Send an image, video, or GIF first, then run `/caption`.")
+            await channel.send(f"{interaction.user.mention} No media found. Send an image, video, or GIF first, then run `/caption`.")
         return
 
-    send_fn = await prepare_interaction_send(interaction, "Processing your caption...")
+    send_fn = await prepare_interaction_send(interaction, "aksel is pondering...")
     url, filename, force_gif = media
     style = {"white": "light", "black": "dark"}[bg]
     caption = caption.replace("\\n", "\n")
@@ -951,17 +951,17 @@ async def image_to_gif(interaction: discord.Interaction, effect: Literal["fade_b
     if not media:
         try:
             await interaction.response.send_message(
-                "❌ No image found. Send a still image first, then run `/image_to_gif`.",
+                " No image found. Send a still image first, then run `/image_to_gif`.",
                 ephemeral=True,
             )
         except discord.NotFound:
             channel = interaction.channel
             if channel is None:
                 raise RuntimeError("Interaction channel is unavailable.")
-            await channel.send(f"{interaction.user.mention} ❌ No image found. Send a still image first, then run `/image_to_gif`.")
+            await channel.send(f"{interaction.user.mention}  No image found. Send a still image first, then run `/image_to_gif`.")
         return
 
-    send_fn = await prepare_interaction_send(interaction, "Processing your GIF...")
+    send_fn = await prepare_interaction_send(interaction, "aksel is pondering...")
     url, _filename, _force_gif = media
     await do_image_to_gif(send_fn, url, effect)
 
