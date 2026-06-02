@@ -1,6 +1,6 @@
    <img src="assets/aksel.png" width="50">
 
-# aksel
+# AKSEL
 
 
 Aksel is small Discord bot for adding clean meme-style caption bars to images, GIFs, and videos. It also turns still images into simple animated GIF effects.
